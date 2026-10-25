@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Reminder - Smart Task Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <span>AI Reminder</span>
+                </div>
+                <button class="sidebar-close" id="sidebarClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-view="all">
+                    <i class="fas fa-list"></i>
+                    <span>All Reminders</span>
+                </button>
+                <button class="nav-item" data-view="upcoming">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>Upcoming</span>
+                </button>
+                <button class="nav-item" data-view="completed">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Completed</span>
+                </button>
+                <button class="nav-item" data-view="calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Calendar</span>
+                </button>
+                <button class="nav-item" data-view="assistant">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant</span>
+                </button>
+                <button class="nav-item" data-view="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search reminders...">
+                    </div>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="add-reminder-btn-header" id="addReminderBtnHeader">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Reminder</span>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Dashboard View -->
+            <section class="view active" id="view-dashboard">
+                <div class="quick-actions">
+                    <button class="quick-action-card" id="quickAddBtn">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <div class="quick-action-text">
+                            <h3>AI Create Reminder</h3>
+                            <p>Describe in natural language</p>
+                        </div>
+                    </button>
+                    <button class="quick-action-card" id="quickManualBtn">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="quick-action-text">
+                            <h3>Manual Add</h3>
+                            <p>Create with form</p>
+                        </div>
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon today">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="statToday">0</div>
+                            <div class="stat-label">Today</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon upcoming">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="statUpcoming">0</div>
+                            <div class="stat-label">Upcoming</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="statCompleted">0</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon overdue">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="statOverdue">0</div>
+                            <div class="stat-label">Overdue</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-sections">
+                    <section class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Today's Reminders</h2>
+                            <button class="view-all-btn" data-view="today">View All</button>
+                        </div>
+                        <div class="reminder-cards" id="todayReminders"></div>
+                        <div class="empty-state-small" id="emptyToday" style="display: none;">
+                            <i class="fas fa-sun"></i>
+                            <p>No reminders for today</p>
+                        </div>
+                    </section>
+                    
+                    <section class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Upcoming</h2>
+                            <button class="view-all-btn" data-view="upcoming">View All</button>
+                        </div>
+                        <div class="reminder-cards" id="upcomingReminders"></div>
+                        <div class="empty-state-small" id="emptyUpcoming" style="display: none;">
+                            <i class="fas fa-calendar-plus"></i>
+                            <p>No upcoming reminders</p>
+                        </div>
+                    </section>
+                </div>
+            </section>
+            
+            <!-- All Reminders View -->
+            <section class="view" id="view-all">
+                <div class="view-header">
+                    <h2>All Reminders</h2>
+                    <div class="filter-group">
+                        <select id="filterPriority">
+                            <option value="all">All Priorities</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                        <select id="filterRecurrence">
+                            <option value="all">All Types</option>
+                            <option value="none">One-time</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="reminder-list" id="allRemindersList"></div>
+                <div class="empty-state" id="emptyAll" style="display: none;">
+                    <i class="fas fa-inbox"></i>
+                    <h3>No reminders yet</h3>
+                    <p>Create your first reminder to get started</p>
+                    <button class="empty-state-btn" id="emptyAddBtn">Add Reminder</button>
+                </div>
+            </section>
+            
+            <!-- Upcoming View -->
+            <section class="view" id="view-upcoming">
+                <div class="view-header">
+                    <h2>Upcoming Reminders</h2>
+                </div>
+                <div class="reminder-list" id="upcomingList"></div>
+                <div class="empty-state" id="emptyUpcomingList" style="display: none;">
+                    <i class="fas fa-clock"></i>
+                    <h3>No upcoming reminders</h3>
+                    <p>All caught up!</p>
+                </div>
+            </section>
+            
+            <!-- Completed View -->
+            <section class="view" id="view-completed">
+                <div class="view-header">
+                    <h2>Completed Tasks</h2>
+                    <button class="clear-completed-btn" id="clearCompletedBtn">
+                        <i class="fas fa-trash"></i>
+                        Clear All
+                    </button>
+                </div>
+                <div class="reminder-list" id="completedList"></div>
+                <div class="empty-state" id="emptyCompleted" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>No completed tasks yet</h3>
+                    <p>Complete some reminders to see them here</p>
+                </div>
+            </section>
+            
+            <!-- Calendar View -->
+            <section class="view" id="view-calendar">
+                <div class="view-header">
+                    <h2>Calendar</h2>
+                    <div class="calendar-nav">
+                        <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="calendarMonthYear"></h3>
+                        <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="calendar-container">
+                    <div class="calendar-weekdays">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    <div class="calendar-days" id="calendarDays"></div>
+                </div>
+                <div class="calendar-reminders" id="calendarReminders">
+                    <h3>Reminders for <span id="selectedDate"></span></h3>
+                    <div id="calendarRemindersList"></div>
+                </div>
+            </section>
+            
+            <!-- AI Assistant View -->
+            <section class="view" id="view-assistant">
+                <div class="view-header">
+                    <h2>AI Assistant</h2>
+                    <p class="view-subtitle">Create and manage reminders using natural language</p>
+                </div>
+                <div class="assistant-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message assistant">
+                            <div class="chat-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="chat-bubble">
+                                <p>Hello! I can help you create reminders using natural language. Try saying something like "Remind me to study tomorrow at 7 PM" or "Add a meeting with John on Friday at 3 PM".</p>
+                                <p class="chat-note"><strong>Note:</strong> This uses a rule-based parser. For advanced AI features, connect an external API in Settings.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chatInput" placeholder="Type your reminder in natural language..." autocomplete="off">
+                        <button id="chatSendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Settings View -->
+            <section class="view" id="view-settings">
+                <div class="view-header">
+                    <h2>Settings</h2>
+                </div>
+                <div class="settings-sections">
+                    <section class="settings-section">
+                        <h3>Appearance</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Theme</div>
+                                <div class="setting-description">Choose light or dark mode</div>
+                            </div>
+                            <button class="theme-toggle-settings" id="themeToggleSettings">
+                                <i class="fas fa-moon"></i>
+                                <span>Dark Mode</span>
+                            </button>
+                        </div>
+                    </section>
+                    
+                    <section class="settings-section">
+                        <h3>Notifications</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Browser Notifications</div>
+                                <div class="setting-description">Get notified when reminders are due</div>
+                            </div>
+                            <button class="btn-secondary" id="enableNotificationsBtn">
+                                <i class="fas fa-bell"></i>
+                                Enable Notifications
+                            </button>
+                        </div>
+                        <div class="notification-note">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Browser notifications may require the app to remain open, depending on your browser settings. For best results, keep this tab active.</p>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Sound Notifications</div>
+                                <div class="setting-description">Play sound when reminders are due</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="soundToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">In-App Alerts</div>
+                                <div class="setting-description">Show popup alerts when reminders are due</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="alertToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </section>
+                    
+                    <section class="settings-section">
+                        <h3>AI Configuration</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">AI Parser</div>
+                                <div class="setting-description">Currently using rule-based parser (no API key configured)</div>
+                            </div>
+                        </div>
+                        <div class="ai-note">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p><strong>Rule-based parser limitations:</strong> May not understand complex phrasing, relative dates in unusual formats, or ambiguous times. For better accuracy, connect a secure backend API with your own AI key.</p>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">API Endpoint (Optional)</div>
+                                <div class="setting-description">Enter your backend API URL for AI-powered parsing</div>
+                            </div>
+                        </div>
+                        <input type="text" id="apiEndpoint" class="settings-input" placeholder="https://your-api.com/parse" disabled>
+                        <p class="settings-hint">Note: API keys must be stored on a secure backend, never in frontend JavaScript.</p>
+                    </section>
+                    
+                    <section class="settings-section">
+                        <h3>Data Management</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Export Reminders</div>
+                                <div class="setting-description">Download all reminders as JSON</div>
+                            </div>
+                            <button class="btn-secondary" id="exportBtn">
+                                <i class="fas fa-download"></i>
+                                Export
+                            </button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Import Reminders</div>
+                                <div class="setting-description">Import reminders from JSON file</div>
+                            </div>
+                            <input type="file" id="importFile" accept=".json" style="display: none;">
+                            <button class="btn-secondary" id="importBtn">
+                                <i class="fas fa-upload"></i>
+                                Import
+                            </button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Clear All Data</div>
+                                <div class="setting-description">Delete all reminders permanently</div>
+                            </div>
+                            <button class="btn-danger" id="clearAllDataBtn">
+                                <i class="fas fa-trash-alt"></i>
+                                Clear All
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Add/Edit Reminder Modal -->
+    <div class="modal" id="reminderModal">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Reminder</h2>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="reminderForm" novalidate>
+                <input type="hidden" id="reminderId">
+                <div class="form-group">
+                    <label for="reminderTask">Task *</label>
+                    <input type="text" id="reminderTask" placeholder="What do you need to remember?" required>
+                    <div class="error-message" id="errorTask"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reminderDate">Date *</label>
+                        <input type="date" id="reminderDateInput" required>
+                        <div class="error-message" id="errorDate"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reminderTime">Time *</label>
+                        <input type="time" id="reminderTimeInput" required>
+                        <div class="error-message" id="errorTime"></div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reminderPriority">Priority</label>
+                        <select id="reminderPrioritySelect">
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reminderRecurrence">Recurrence</label>
+                        <select id="reminderRecurrenceSelect">
+                            <option value="none" selected>None</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reminderNotes">Notes (Optional)</label>
+                    <textarea id="reminderNotes" rows="3" placeholder="Add any additional details..."></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Reminder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- AI Confirmation Modal -->
+    <div class="modal" id="aiConfirmModal">
+        <div class="modal-backdrop" id="aiConfirmBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Reminder</h2>
+                <button class="modal-close" id="aiConfirmClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="ai-confirm-content">
+                <p class="ai-confirm-message">I parsed your reminder as:</p>
+                <div class="ai-confirm-details">
+                    <div class="ai-confirm-row">
+                        <strong>Task:</strong>
+                        <span id="aiConfirmTask"></span>
+                    </div>
+                    <div class="ai-confirm-row">
+                        <strong>Date:</strong>
+                        <span id="aiConfirmDate"></span>
+                    </div>
+                    <div class="ai-confirm-row">
+                        <strong>Time:</strong>
+                        <span id="aiConfirmTime"></span>
+                    </div>
+                    <div class="ai-confirm-row">
+                        <strong>Priority:</strong>
+                        <span id="aiConfirmPriority"></span>
+                    </div>
+                    <div class="ai-confirm-row">
+                        <strong>Recurrence:</strong>
+                        <span id="aiConfirmRecurrence"></span>
+                    </div>
+                </div>
+                <p class="ai-confirm-question">Is this correct? You can edit before saving.</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="aiConfirmEdit">Edit</button>
+                    <button type="button" class="btn-primary" id="aiConfirmSave">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
